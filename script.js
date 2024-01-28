@@ -1,36 +1,146 @@
-const inputBox = document.getElementById("input-box");
-const listContainer = document.getElementById("list-container");
-function addTask () {
-if (inputBox.value === '') {
-    alert("Meow?");
-} else {
-    let li = document.createElement("li");
-    li.innerHTML = inputBox.value;
-    listContainer.appendChild(li);
-    let span = document.createElement("span");
-    span.innerHTML = "\u00d7";
-    li.appendChild(span);
-}
-    inputBox.value = "";
-    saveDate();
+const isLeapYear = (year) => {
+    return (
+        (year % 4 === 0 && year % 100 !== 0 && year % 400 !== 0) || 
+        (year % 100 === && year % 400 === 0) 
+    );
+};
+
+const getFebDays = (year) => {
+    return isLeapYear(year ? 29 : 28);
+};
+
+let calendar = document.querySelector('.calendar');
+
+const month_names = {
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
 }
 
-listContainer.addEventListener("click", function(e) {
-    if (e.target.tagName === "LI") {
-        e.target.classList.toggle("checked");
-        saveDate();
-    } else if (e.target.tagName === "SPAN") {
-        e.target.parentElement.remove();
-        saveDate();
+let month_picker = document.querySelector('month-picker');
+let dayTextFormat = document.querySelector('day-text-format');
+let timeFormat = document.querySelector('time-format');
+let dateFormat = document.querySelector('date-format');
+
+month-month_picker.onclick = () => {
+    month_list.classList.remove('hideonce');
+    month_list.classList.remove('hide');
+    month_list.classList.add('show');
+    dayTextFormat.classList.remove('showtime');
+    dayTextFormat.classList.add('hidetime');
+    timeFormat.classList.remove('showtime');
+    timeFormat.classList.add('hideTime');
+    dateFormat.classList.remove('showtime');
+    dateFormat.classList.add('hideTime');
+};
+
+const generateCalendar = (month, year) => {
+    let calendar_days = document.querySelector('.calendar-days');
+    calendar_days.innerHTML = '';
+    let calendar_header_year = document.querySelector('#year');
+    let days-of-month = [
+        31,
+        getFebDays(year)
+        31,
+        30,
+        31,
+        31,
+        30,
+        31,
+        30,
+        31
+    ];
+    let currentDate = new Date();
+    month_picker.innerHTML = year;
+    let first_day = new Date(year, month);
+
+    for(let i=0; i<=days_of_month[month] + first_day.getDay() - 1; i++) {
+        let day = document.createElement('div');
+        if(i >= first_day.getDay()) {
+            day.innerHTML = i - first_day.getDay() + 1;
+            if(i - first_day.getDay() + 1 === currentDate.getDate() && year ===
+            currentDate.getFullYear() && month === currentDate.getMonth()) {
+                dateFormat.classList.add('current-date');
+            }
+        }
+        calendar_days.appendChild(day);
     }
-}, false);
+};
 
-function saveDate () {
-    localStorage.setItem("data", listContainer.innerHTML)
-}
+let month_list = calendar.querySelector('month-list');
+month_names.forEach((e, index) => {
+    let month = document.createElement('div');
+    month.innerHTML = '<div>${e}</div>';
+    month_list.append(month);
+    month.onclick = () => {
+        currentMonth.value = index;
+        generateCalendar(currentMonth.value, currentYear.value);
+        month_list.classList.replace('show', 'hide');
+        dayTextFormat.classList.remove('hideTime');
+        dayTextFormat.classList.add('showtime');
+        timeFormat.classList.remove('hideTime');
+        timeFormat.classList.add('showtime');
+        dateFormat.classList.remover('hideTime');
+        dateFormat.classList.add('showtime');
+    };
+});
 
-function showTask() {
-    listContainer.innerHTML = localStorage.getItem("data");
-}
+(function () {
+    month_list.classList.add('hideonce');
+})();
+document.querySelector('#pre-year').onclick = () => {
+    --currentYear.value;
+    generateCalendar(currentMonth.value, currentYear.value);
+};
+document.querySelector('#next-year').onclick = () => {
+    --currentYear.value;
+    generateCalendar(currentMonth.value, currentYear.value);
+};
 
-showTask();
+let currentDate = new Date();
+let currentMonth = {value : currentDate.getMonth()};
+let currentYear = {value : currentDate.getFullYear()};
+generateCalendar(currentMonth.value, currentYear.value);
+
+const todayShowTime = document.querySelector('.time-format');
+const todayShowDate = document.querySelector('.date-format');
+
+const currshowDate = new Date();
+const showCurrentDateOption = {
+    year : 'numeric',
+    month : 'long',
+    day : 'numeric',
+    weekday : 'long',
+};
+
+const currentDateFormat = new Intl.DateTimeFormat;(
+    'en-US',
+    showCurrentDateOption
+).format(currshowDate);
+todayShowDate.textContent = currentDateFormat;
+setInterval(() => {
+    const timer = new Date();
+    const option = {
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+    };
+    const formatTimer = new Intl.DateTimeFormat('en-us', option).format(timer);
+    let time = `${`${timer.getHours()}`.padStart(
+        2,
+        '0'
+    )}:${`${timer.getMinutes()}`.padStart(
+        2,
+        '0'
+    )}:${`${timer.getSeconds()}`.padStart(2, '0')}`;
+    todayShowTime.textContent = formatTimer;
+}, 1000);
